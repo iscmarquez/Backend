@@ -1,0 +1,22 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Application web Portes ouvertes",
+  "main": "FONCT5.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iscmarquez/Backend.git"
+  },
+  "author": "Juan Sierra",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iscmarquez/Backend/issues"
+  },
+  "homepage": "https://github.com/iscmarquez/Backend#readme",
+  "dependencies": {
+    "mysql": "^2.18.1"
+  }
+}
