@@ -1,54 +1,55 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mysql = require("mysql");
-
 const app = express();
 
 app.use(bodyParser.json());
 
 app.use(bodyParser.urlencoded({extended: true }));
 
-app.get("/", (req, res) => {
-    res.json({ message: "Bienvenu sur l'application"});
-});
+app.use(express.static('./'));
 
-const connection = mysql.createConnection({
+const con = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "root",
     database: "PortesOuvertsGrasset"
 });
 
+app.get("/", (req, res) => {
+    console.log("La méthode GET marche bien");
+    res.json({ message: "Bienvenu sur l'application"});
+});
+
+app.post('/myaction', function (req, res) {
+    console.log("La méthode POST marche bien");
+    res.send(req.body);
+    console.log(req.body);
+    var lastName = req.body.nom;
+    var firstName = req.body.prenom;
+    var phone = req.body.telephone;
+    var mail = req.body.courriel;
+    var country = req.body.pays;
+    var state = req.body.province;
+    var idProgram = req.body.programmes;
+    var moyenCommunication = req.body.moyenCommunication;
+    var consentMessage = req.body.consent;
+
+    con.connect(error => {
+        if (error) throw error;
+        console.log("Connecté sur la base de données avec succès!");
+
+        var sql = "INSERT INTO `inscription`(`lastName`,`firstName`, `phone`, `mail`, `country`, `state`, `idProgram`, `moyenCommunication`, `consentMessage`) VALUES ('"+lastName+"','"+firstName+"','"+phone+"','"+mail+"','"+country+"','"+state+"','"+idProgram+"','"+moyenCommunication+"','"+consentMessage+"')";
+        con.query(sql, function (err) {
+            if (err) throw err;
+            console.log("One record inserted");
+        });
+    });
+    res.json({ message: "Les données ont été bien insérées"});
+ 
+});
+
+
 app.listen(3000, () => {
     console.log("Le serveur marche bien sur le port 3000");
 });
-
-connection.connect(error => {
-    if (error) throw error;
-    console.log("Connecté sur la base de données avec succès!");
-});
-
-const User = function(user) {
-    this.nom = user.nom;
-    this.prenom = user.prenom;
-    this.telephone = user.telephone;
-    this.email = user.email;
-    this.pays = user.pays;
-};
-
-User.create = (newUser, result) => {
-    connection.query("INSERT INTO User SET ?", newUser, (err, res) => {
-        if (err) {
-            console.log("erreur: ", err);
-            result(err, null);
-            return;
-        }
-
-        console.log("Création de l'utilisateur: ", {username: res.insertusername, newUser});
-        result(null, { username: res.insertusername, newUser});
-    });
-};
-
-
-
-
