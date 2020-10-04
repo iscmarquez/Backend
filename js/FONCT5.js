@@ -1,5 +1,6 @@
 const  mysql = require('mysql');
 const express = require('express');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 
 var conferences = [];
@@ -29,6 +30,7 @@ conexion.connect(function(error){
 // bodyParser Setup
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors());
 
 //http://www.google.com/about
 
