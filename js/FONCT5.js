@@ -1,12 +1,17 @@
+const  mysql = require('mysql');
+const express = require('express');
+const bodyParser = require('body-parser');
+
 var conferences = [];
 var queryconf=[];
 //var date = new Date();
 var tempdateNow="";
 var tempdateEvent="";
 
+const app = express();
+const PORT = 3000;
 
-var mysql= require('mysql');
-var conexion= mysql.createConnection({
+const conexion= mysql.createConnection({
     host: 'localhost',
     database: 'PortesOuvertsGrasset',
     user: 'root',
@@ -21,26 +26,116 @@ conexion.connect(function(error){
     }         
 });
 
-conexion.query('select speaker.name, speaker.photolink, conference.linkconference, conference.linkconference, conference.nomconference, event.startdate from speaker left join conference on conference.idspeaker = speaker.idspeaker inner join event on conference.idevent = event.idevent and event.startdate >= NOW()', function(error, results, fields){
-    if(error)
-    throw error;
+// bodyParser Setup
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
-    results.forEach(results => {
-        queryconf.push(results);
-        
-        //console.log(results);
+//http://www.google.com/about
 
-        
-
-        tempdateEvent = results;
-        
-        CargarDatos(tempdateEvent);
-        //console.log(tempdateEvent.length);
-        
-        //console.log(DateCourrant());
-
+app.get('/', (req, res, next) => {
+    console.log(req.body);
+    conexion.query('select speaker.name, speaker.photolink, conference.linkconference, conference.linkconference, conference.nomconference, event.startdate from speaker left join conference on conference.idspeaker = speaker.idspeaker inner join event on conference.idevent = event.idevent and event.startdate >= NOW()', (error, results, fields) => {
+        if(error)
+            throw error;
+    
+        return res.json(results);
+        // results.forEach(results => {
+        //     queryconf.push(results);
+        //     //console.log(results);
+        //     tempdateEvent = results;
+        //     CargarDatos(tempdateEvent);
+        //     //console.log(tempdateEvent.length);
+        //     //console.log(DateCourrant());
+        // });
     });
 });
+
+app.get('/event', (req, res, next) => {
+    // console.log(req.body);
+    conexion.query('select * from event', (error, results, fields) => {
+        if(error)
+            throw error;
+        return res.json(results);
+    });
+});
+
+app.get('/event/:eventId', (req, res, next) => {
+    const eventId = req.params.eventId;
+    // console.log(req.body);
+    conexion.query(`select speaker.name, speaker.photolink, conference.linkconference, conference.nomconference, event.startdate from speaker left join conference on conference.idspeaker = speaker.idspeaker inner join event on conference.idevent = event.idevent and event.idevent = ${eventId}`, (error, results, fields) => {
+        if(error)
+            throw error;
+        return res.json(results);
+    });
+});
+
+// Add new event
+// app.post('/event', (req, res, next) => {
+//     console.log(req.body);
+//     const event = req.body;
+
+//     conexion.query(`INSERT INTO event (idEvent, startDate, endDate, idUser)
+//     VALUES (${event.idEvent}, ${event.startDate}, ${event.endDate}, ${event.idUser})`
+//     , (error, results, fields) => {
+//         if(error)
+//             throw error;
+//         return res.json(results);
+//     });
+// });
+
+// update an event
+// app.post('/event/:id', (req, res, next) => {
+//     const id = req.params.id;
+//     console.log(req.body);
+//     const event = req.body;
+//     if (event.startDate || event.endDate)
+//         conexion.query(`UPDATE INTO event 
+//             SET ${event.startDate ? 'startDate = ' + event.startDate : ''}
+//                 ${event.endDate ? 'endDate = ' + event.endDate : ''}`
+//             , (error, results, fields) => {
+//                 if(error)
+//                     throw error;
+//                 return res.json(results);
+//         });
+//     else 
+//         return res.status(404).json('We cant update the event');
+// });
+
+app.listen(PORT, () => console.log(`Your server is running on port ${PORT}`));
+
+//conexion.end();
+
+//set databse connection credentials
+// const FONCT5= {
+//     host: 'localhost',
+//     database: 'PortesOuvertsGrasset',
+//     user: 'root',
+//     password: 'root',
+// };
+//set databse connection credentials
+
+//create a MySQL pool
+
+//const pool = mysql.createPool(conexion);
+
+//Export the pool
+// module.exports= pool;
+
+//load the MySQL pool connection
+//const pool = require('../data/config');
+
+//Display all users
+
+// app.get('/users', (request, reponse)=>{
+//     pool.query('select speaker.name, speaker.photolink, conference.linkconference, conference.linkconference, conference.nomconference, event.startdate from speaker left join conference on conference.idspeaker = speaker.idspeaker inner join event on conference.idevent = event.idevent and event.startdate >= NOW()',(error, result)=>{
+//         if(error) throw error;
+//         response.send(result);
+//     });
+// });
+
+
+
+
 
 // conexion.query('select now()', function(error, results, fields){
 //     if(error)
@@ -73,7 +168,6 @@ function CargarDatos(tempdateEvent){
 
 
 
-conexion.end();
 
 
 // function DateCourrant(){
