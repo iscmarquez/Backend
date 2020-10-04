@@ -71,6 +71,15 @@ app.get('/event/:eventId', (req, res, next) => {
     });
 });
 
+app.get('/event/eventId/:idspeaker', (req, res, next) => {
+    const idspeaker = req.params.idspeaker;
+    // console.log(req.body);
+    conexion.query(`select speaker.name from speaker left join conference on conference.idspeaker = speaker.idspeaker inner join event on conference.idevent = event.idevent and conference.idspeaker = ${idspeaker}`, (error, results, fields) => {
+        if(error)
+            throw error;
+        return res.json(results);
+    });
+});
 // Add new event
 // app.post('/event', (req, res, next) => {
 //     console.log(req.body);
