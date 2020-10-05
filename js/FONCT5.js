@@ -10,6 +10,8 @@ var tempdateNow="";
 var tempdateEvent="";
 
 const app = express();
+
+
 const PORT = 3000;
 
 const conexion= mysql.createConnection({
@@ -63,7 +65,7 @@ app.get('/event', (req, res, next) => {
 
 app.get('/event/:eventId', (req, res, next) => {
     const eventId = req.params.eventId;
-    // console.log(req.body);
+    //console.log(req.body);
     conexion.query(`select speaker.name, speaker.photolink, conference.linkconference, conference.nomconference, event.startdate from speaker left join conference on conference.idspeaker = speaker.idspeaker inner join event on conference.idevent = event.idevent and event.idevent = ${eventId}`, (error, results, fields) => {
         if(error)
             throw error;
