@@ -9,13 +9,6 @@ app.use(bodyParser.urlencoded({extended: true }));
 
 app.use(express.static('./'));
 
-const con = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "root",
-    database: "PortesOuvertsGrasset"
-});
-
 app.get("/", (req, res) => {
     console.log("La méthode GET marche bien");
     res.json({ message: "Bienvenu sur l'application"});
@@ -35,19 +28,26 @@ app.post('/myaction', function (req, res) {
     var moyenCommunication = req.body.moyenCommunication;
     var consentMessage = req.body.consent;
 
-    con.connect(error => {
-        if (error) throw error;
-        console.log("Connecté sur la base de données avec succès!");
+    const queryString = "INSERT INTO inscription (mail, firstName, lastName, country, state, phone, moyenCommunication, consentMessage, idProgram) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    getConnection().query(queryString, [mail, firstName, lastName, country, state, phone, moyenCommunication, consentMessage, idProgram], (err, results, fields) => {
+        if (err) {
+            console.log("Une erreur s'est produite" + err)
+            res.sendStatus(500)
+            return
+        }
+        console.log("Données insérées avec succès!" + results.insertedId);
+        res.end()
+    })
+})
 
-        var sql = "INSERT INTO `inscription`(`lastName`,`firstName`, `phone`, `mail`, `country`, `state`, `idProgram`, `moyenCommunication`, `consentMessage`) VALUES ('"+lastName+"','"+firstName+"','"+phone+"','"+mail+"','"+country+"','"+state+"','"+idProgram+"','"+moyenCommunication+"','"+consentMessage+"')";
-        con.query(sql, function (err) {
-            if (err) throw err;
-            console.log("One record inserted");
-        });
-    });
-    res.json({ message: "Les données ont été bien insérées"});
- 
-});
+function getConnection() {
+    return mysql.createConnection({
+        host: "localhost",
+        user: "root",
+        password: "root",
+        database: "PortesOuvertsGrasset"
+    })
+ }
 
 
 app.listen(3000, () => {
