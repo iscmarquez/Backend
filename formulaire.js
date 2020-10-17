@@ -111,19 +111,36 @@ function processData(){
         data.phone = form.telephone.value;
         data.mail = form.courriel.value;
         data.country = form.pays.value;
-        data.state = form.province.value;
-        data.courseId = $('.courseId:checked').val();
+        if (data.country == "Canada") {
+          data.state = form.province.value;
+        } 
+        data.courseId = checkboxProgrammeSelectionne();
         if (autreText.length > 0) {
           data.moyenCommunication = autreText;
           //data.moyenCommunication = $('.moyenCommunication:checked').val();
         } else {
-          data.moyenCommunication = $('.moyenCommunication:checked').val();;
+          data.moyenCommunication = checkboxCommunicationSelectionne();
         }
         data.consentMessage = form.consent.value;
         console.log(data);
     submitForm(data);
   }
   
+  function checkboxProgrammeSelectionne(){
+    let valeursProgrammeCheck = [];
+  $('.courseId:checked').each(function(){
+      valeursProgrammeCheck.push(this.value);
+  });
+  return valeursProgrammeCheck;
+  }
+
+  function checkboxCommunicationSelectionne(){
+    let valeursCommunicationCheck = [];
+  $('.moyenCommunication:checked').each(function(){
+      valeursCommunicationCheck.push(this.value);
+  });
+  return valeursCommunicationCheck;
+  }
 
 
   // else if($(this).is(":not(:checked)")){
